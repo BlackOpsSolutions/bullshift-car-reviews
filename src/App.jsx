@@ -18,11 +18,22 @@ function useLatestVideo() {
       })
       .then((xml) => {
         const doc = new DOMParser().parseFromString(xml, 'application/xml');
-        const entry = doc.querySelector('entry');
-        if (!entry) throw new Error('No videos found');
-        const videoId = entry.querySelector('videoId')?.textContent;
-        const title = entry.querySelector('title')?.textContent;
-        setVideo({ videoId, title });
+        const entries = doc.querySelectorAll('entry');
+        if (!entries.length) throw new Error('No videos found');
+
+        for (const entry of entries) {
+          const link = entry.querySelector('link')?.getAttribute('href') || '';
+          // Skip Shorts — their URLs contain /shorts/
+          if (link.includes('/shorts/')) continue;
+
+          const videoId = entry.querySelector('videoId')?.textContent;
+          const title = entry.querySelector('title')?.textContent;
+          if (videoId) {
+            setVideo({ videoId, title });
+            return;
+          }
+        }
+        throw new Error('No long-form videos found');
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));

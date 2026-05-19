@@ -23,7 +23,7 @@ function useLatestVideo() {
 
         for (const entry of entries) {
           const link = entry.querySelector('link')?.getAttribute('href') || '';
-          // Skip Shorts — their URLs contain /shorts/
+          // Skip Shorts - their URLs contain /shorts/
           if (link.includes('/shorts/')) continue;
 
           const videoId = entry.querySelector('videoId')?.textContent;
